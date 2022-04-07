@@ -57,7 +57,7 @@ function getMatchDetails(html){
             if(selecTool(row).hasClass("ds-text-tight-s")){
                 let firstColofRow = row.find("td")[0];
                 if(selecTool(firstColofRow).hasClass("ds-min-w-max")){
-                    let playerName = selecTool(row.find("td")[0]).text();
+                    let playerName = selecTool(row.find("td")[0]).text().trim();
                     let runs = selecTool(row.find("td")[2]).text();
                     let balls = selecTool(row.find("td")[3]).text();
                     let numOf4 = selecTool(row.find("td")[5]).text();
@@ -68,7 +68,7 @@ function getMatchDetails(html){
                     //     `${playerName} | ${runs} | ${balls} | ${numOf4} | ${numOf6} | ${runRate}`
                     // );
                     processInfo(dateOfMAtch , VenueOfMAtch , matchResult , Team1 , Team2 , playerName , runs , balls , numOf4 , numOf6 , runRate);
-                    
+
                 }
             }
         }
@@ -80,7 +80,7 @@ function getMatchDetails(html){
             fs.mkdirSync(teamNamePath);
         }
 
-        let playerPath = path.join(teamNamePath , playerName , ".xlsx");
+        let playerPath = path.join(teamNamePath , playerName + ".xlsx");
         let content = excelReader(playerPath , playerName);
 
         let playerObj = {
@@ -104,10 +104,15 @@ function getMatchDetails(html){
 
 }
 
-function excelReader(playerPath , playerName){
-    if(!fstat.existsSync(playerPath)){
+function excelReader(playerPath , sheetName){
+    if(!fs.existsSync(playerPath)){
         return[]; 
     }
+    let workBook = xlsx.readFile(playerPath);
+    let excelData = workBook.Sheets[sheetName];
+    let playerObj = xlsx.utils.sheet_to_json(excelData);
+    return playerObj;
+
 }
 
 function excelWriter(playerPath , jsObject , sheetName){
