@@ -67,6 +67,7 @@ function getMatchDetails(html){
                     // console.log(
                     //     `${playerName} | ${runs} | ${balls} | ${numOf4} | ${numOf6} | ${runRate}`
                     // );
+                    processInfo(dateOfMAtch , VenueOfMAtch , matchResult , Team1 , Team2 , playerName , runs , balls , numOf4 , numOf6 , runRate);
                     
                 }
             }
