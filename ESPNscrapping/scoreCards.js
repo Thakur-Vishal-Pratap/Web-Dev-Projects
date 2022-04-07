@@ -1,6 +1,9 @@
 const request = require("request");
 const cheerio = require("cheerio");
-const { connected } = require("process");
+const { fstat } = require("fs");
+const fs = require("fs");
+const path = require("path");
+const xlsx = require("xlsx");
 
 function getInfoFromScorecard(url){
     // console.log("from allMatch.js" , url);
@@ -61,14 +64,57 @@ function getMatchDetails(html){
                     let numOf6 = selecTool(row.find("td")[6]).text();
                     let runRate = selecTool(row.find("td")[7]).text();
 
-                    console.log(
-                        `${playerName} | ${runs} | ${balls} | ${numOf4} | ${numOf6} | ${runRate}`
-                    );
+                    // console.log(
+                    //     `${playerName} | ${runs} | ${balls} | ${numOf4} | ${numOf6} | ${runRate}`
+                    // );
+                    
                 }
             }
         }
     }
 
+    function processInfo(dateOfMAtch , VenueOfMAtch , matchResult , Team1 , Team2 , playerName , runs , balls , numOf4 , numOf6 , runRate){
+        let teamNamePath = path.join(__dirname , "IPL" , Team1);
+        if(!fs.existsSync(teamNamePath)){
+            fs.mkdirSync(teamNamePath);
+        }
+
+        let playerPath = path.join(teamNamePath , playerName , ".xlsx");
+        let content = excelReader(playerPath , playerName);
+
+        let playerObj = {
+            dateOfMAtch, 
+            VenueOfMAtch, 
+            matchResult,
+            Team1,
+            Team2,
+            playerName,
+            runs,
+            balls,
+            numOf4,
+            numOf6, 
+            runRate,
+        };
+
+        content.push(playerObj);
+        excelWriter(playerPath , content , playerName);
+
+    }
+
+}
+
+function excelReader(playerPath , playerName){
+    if(!fstat.existsSync(playerPath)){
+        return[]; 
+    }
+}
+
+function excelWriter(playerPath , jsObject , sheetName){
+    let newWorkBook = xlsx.utils.book_new();
+    let newWorkSheet = xlsx.utils.json_to_sheet(jsObject);
+
+    xlsx.utils.book_append_sheet(newWorkBook , newWorkSheet , sheetName);
+    xlsx.writeFile(newWorkBook,playerPath);
 }
 
 module.exports = {

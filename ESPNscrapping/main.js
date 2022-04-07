@@ -15,6 +15,12 @@ function cb(err , res , body){
     }
 }
 
+let iplPath = path.join(__dirname , "IPL");
+if(!fs.existsSync(iplPath)){
+    fs.mkdirSync(iplPath);
+}
+
+
 function handleHtml(html){
     let selecTool = cheerio.load(html);
     let anchorElem = selecTool('a[class="ds-block ds-text-center ds-uppercase ds-text-ui-typo-primary ds-underline-offset-4 hover:ds-underline hover:ds-decoration-ui-stroke-primary ds-block"]');
