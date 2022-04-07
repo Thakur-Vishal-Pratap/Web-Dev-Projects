@@ -1,7 +1,8 @@
 const request = require("request");
 const cheerio = require("cheerio");
 const getScorecardObj = require("./scoreCards");
-const { url } = require("inspector");
+const { log } = require("console");
+// const { url } = require("inspector");
 
 function getAllMatch(url){
     // console.log("from allMatch.js" , url);
@@ -12,20 +13,23 @@ function cb(err , res , body){
     if(err){
         console.error("error" , err);
     }else{
-        handleHtml(body);
+        extractAllMatchLink(body);
     }
 }
 
-function handleHtml(html){
+function extractAllMatchLink(html){
     let selecTool = cheerio.load(html);
-    let scoreCardElemArr = selecTool('a[data-hover="Scorecard"]');
+    let scoreCardElemArr = selecTool('a[class="ds-text-ui-typo ds-underline-offset-4 hover:ds-underline hover:ds-decoration-ui-stroke ds-block"][href*="full-scorecard"] ');
+    // console.log(scoreCardElemArr.length);
     for(let i=0 ; i<scoreCardElemArr.length; i++){
         let scorecardLink = selecTool(scoreCardElemArr[i]).attr("href");
+        // console.log(scorecardLink);
         let fullLink = "https://www.espncricinfo.com" + scorecardLink;
+        console.log(fullLink);
         getScorecardObj.gifs(fullLink);
     }
 }
 
-module.export = {
+module.exports = {
     getAllMatch : getAllMatch,
 };
